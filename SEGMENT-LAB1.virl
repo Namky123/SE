@@ -252,9 +252,9 @@ mpls oam
         </entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
-        <interface id="0" name="GigabitEthernet0/0/0/0" ipv4="10.0.0.6" netPrefixLenV4="30"/>
-        <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="10.0.0.22" netPrefixLenV4="30"/>
-        <interface id="2" name="GigabitEthernet0/0/0/2"/>
+        <interface id="0" name="GigabitEthernet0/0/0/0" ipv4="99.1.11.11" netPrefixLenV4="24"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="99.5.11.11" netPrefixLenV4="24"/>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="99.9.11.11" netPrefixLenV4="24"/> 
         <interface id="3" name="GigabitEthernet0/0/0/3"/>
         <interface id="4" name="GigabitEthernet0/0/0/4"/>
         <interface id="5" name="GigabitEthernet0/0/0/5"/>

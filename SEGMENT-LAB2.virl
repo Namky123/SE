@@ -1085,6 +1085,73 @@ call-home
 ipv4 access-list NONE
  10 deny ipv4 any any
 !         
+hostname PE4
+group ISIS_TI-LFA
+ router isis '.*'
+  interface 'Gi.*'
+   address-family ipv4 unicast
+    fast-reroute per-prefix
+    fast-reroute per-prefix ti-lfa
+   !
+   address-family ipv6 unicast
+    fast-reroute per-prefix
+    fast-reroute per-prefix ti-lfa
+   !
+  !
+ !
+end-group
+service timestamps log datetime msec
+service timestamps debug datetime msec
+domain lookup disable
+telnet vrf default ipv4 server max-servers 10
+username cisco
+ group root-lr
+ group cisco-support
+ secret 5 $1$dKfh$Dg62LsLugyPsNDltQjnp.1
+!
+cdp
+vrf RED
+ address-family ipv4 unicast
+  import route-target
+   1:1
+  !
+  export route-target
+   1:1
+  !
+ !
+ address-family ipv6 unicast
+  import route-target
+   2:1
+  !
+  export route-target
+   2:1
+  !
+ !
+!
+line template vty
+ timestamp
+ exec-timeout 720 0
+!
+line console
+ timestamp disable
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 720 0
+!
+vty-pool default 0 50
+icmp ipv4 rate-limit unreachable disable
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+ipv4 access-list NONE
+ 10 deny ipv4 any any
+!         
 interface Loopback0
  description Loopback
  ipv4 address 1.1.1.14 255.255.255.255
@@ -1096,7 +1163,7 @@ interface Loopback100
  ipv6 address 2001::100:1:1:14/128
 !
 interface MgmtEth0/RP0/CPU0/0
-  description OOB Management
+description OOB Management
   ! Configured on launch
   vrf Mgmt-intf
   ipv4 address dhcp
@@ -1142,19 +1209,15 @@ router isis 1
  net 49.0001.0000.0000.0014.00
  address-family ipv4 unicast
   metric-style wide
-  segment-routing mpls
  !
  address-family ipv6 unicast
   metric-style wide
-  segment-routing mpls
  !
  interface Loopback0
   passive
   address-family ipv4 unicast
-   prefix-sid index 14
   !
   address-family ipv6 unicast
-   prefix-sid index 1014
   !
  !
  interface GigabitEthernet0/0/0/0
@@ -1180,7 +1243,7 @@ router bgp 1
  bgp router-id 1.1.1.14
  address-family ipv4 unicast
   network 100.1.1.14/32
- !        
+ !
  address-family vpnv4 unicast
  !
  address-family ipv6 unicast
@@ -1204,7 +1267,7 @@ router bgp 1
   description ## to RR Node10 ##
   update-source Loopback0
   address-family ipv6 unicast
-  !
+  !       
  !
  vrf RED
   rd 1:14
@@ -1226,20 +1289,39 @@ l2vpn
    interface GigabitEthernet0/0/0/2.100
    neighbor ipv4 1.1.1.13 pw-id 1234
     pw-class EoMPLS-PWCLASS
-   !      
-  !
+   !
+  !       
  !
 !
 mpls oam
 !
 mpls ldp
+ log
+  hello-adjacency
+  neighbor
+ !
+ router-id 1.1.1.14
+ neighbor
+  dual-stack transport-connection prefer ipv4
+ !
  address-family ipv4
   discovery targeted-hello accept
-  label
-   local
-    allocate for NONE
-   !
+ !
+ address-family ipv6
+ !
+ interface GigabitEthernet0/0/0/0
+  address-family ipv4
   !
+  address-family ipv6
+  !       
+ !
+ interface GigabitEthernet0/0/0/1
+  address-family ipv4
+  !
+  address-family ipv6
+  !
+ !
+!
  !
 !
 
